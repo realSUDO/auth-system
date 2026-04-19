@@ -1,2 +1,7 @@
 node_modules/
 dist/
+
+# secrets
+.env
+backend/src/utils/keys/private.key
+backend/src/utils/keys/public.key
