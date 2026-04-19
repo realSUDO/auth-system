@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Auth Demo</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 Auth System</h1>
+    <div class="tabs">
+      <button class="tab active" onclick="show('auth', this)">Signup / Login</button>
+      <button class="tab" onclick="show('verify', this)">Verify Token</button>
+      <button class="tab" onclick="show('oidc', this)">OIDC Discovery</button>
+    </div>
+
+    <div id="auth" class="panel active">
+      <h2>Sign Up</h2>
+      <input id="su-name" placeholder="Name (optional)">
+      <input id="su-email" placeholder="Email" type="email">
+      <input id="su-pass" placeholder="Password (min 8)" type="password">
+      <button onclick="signup()">Create Account</button>
+      <pre id="su-out"></pre>
+      <h2 style="margin-top:24px">Login</h2>
+      <input id="li-email" placeholder="Email" type="email">
+      <input id="li-pass" placeholder="Password" type="password">
+      <button onclick="login()">Login</button>
+      <pre id="li-out"></pre>
+    </div>
+
+    <div id="verify" class="panel">
+      <h2>Verify Token</h2>
+      <p>Simulates another service verifying a token using only the public key — no auth server call needed.</p>
+      <textarea id="v-token" rows="4" placeholder="Paste JWT here..."></textarea>
+      <button onclick="verifyToken()">Verify</button>
+      <pre id="v-out"></pre>
+    </div>
+
+    <div id="oidc" class="panel">
+      <h2>OIDC Discovery</h2>
+      <button onclick="loadOidc()">GET /.well-known/openid-configuration</button>
+      <pre id="oidc-out"></pre>
+      <button onclick="loadJwks()" style="margin-top:8px">GET /jwks</button>
+      <pre id="jwks-out"></pre>
+    </div>
+  </div>
+  <script src="js/app.js"></script>
+</body>
+</html>
