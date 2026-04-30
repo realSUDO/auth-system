@@ -303,3 +303,72 @@ label {
   .split-layout { grid-template-columns: 1fr; }
   .split-left { display: none; }
 }
+
+/* ---- Brand footer links ---- */
+.brand-footer { display: flex; gap: 1.5rem; }
+
+/* ---- Docs ---- */
+.docs { max-width: 760px; }
+.doc-text { color: var(--muted); font-size: 0.88rem; line-height: 1.7; }
+.doc-text a { color: var(--light); }
+.doc-text code { background: var(--surface2); padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.82rem; }
+.sub-title { font-size: 0.9rem; font-weight: 600; color: var(--light); margin-bottom: 0.8rem; }
+.code-block {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--light);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  padding: 1rem;
+  white-space: pre;
+}
+.endpoint-list { display: flex; flex-direction: column; gap: 0.6rem; }
+.endpoint { display: flex; align-items: center; gap: 0.7rem; font-size: 0.82rem; }
+.endpoint code { color: var(--light); }
+.ep-desc { color: var(--muted); }
+.method { border-radius: 3px; font-size: 0.7rem; font-weight: 600; padding: 0.15rem 0.4rem; font-family: var(--font-brand); }
+.method.get  { background: rgba(82,92,235,0.2); color: #8b96f5; }
+.method.post { background: rgba(80,200,120,0.15); color: #6dcc8a; }
+
+/* ---- Success message ---- */
+.success-msg { color: #6dcc8a; font-size: 0.9rem; line-height: 1.6; }
+
+/* ---- Pending requests ---- */
+.request-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.request-item:last-child { border-bottom: none; }
+.req-info { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.82rem; }
+.req-info strong { color: var(--pale); }
+.req-info code { font-size: 0.75rem; color: var(--light); }
+.req-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+.btn-approve {
+  background: rgba(80,200,120,0.15);
+  border: 1px solid rgba(80,200,120,0.3);
+  border-radius: var(--radius);
+  color: #6dcc8a;
+  cursor: pointer;
+  font-size: 0.78rem;
+  padding: 0.3rem 0.7rem;
+  transition: background 0.15s;
+}
+.btn-approve:hover { background: rgba(80,200,120,0.25); }
+.btn-reject {
+  background: rgba(220,80,80,0.1);
+  border: 1px solid rgba(220,80,80,0.25);
+  border-radius: var(--radius);
+  color: var(--error);
+  cursor: pointer;
+  font-size: 0.78rem;
+  padding: 0.3rem 0.7rem;
+  transition: background 0.15s;
+}
+.btn-reject:hover { background: rgba(220,80,80,0.2); }
+.muted { color: var(--muted); font-size: 0.82rem; }

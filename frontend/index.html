@@ -18,6 +18,8 @@
         <p class="brand-tagline">Identity infrastructure for your apps.</p>
       </div>
       <div class="brand-footer">
+        <a href="#" id="docsLink">Docs</a>
+        <a href="#" id="requestLink">Request Access</a>
         <a href="#" id="adminLink">Admin</a>
       </div>
     </div>
@@ -87,6 +89,138 @@
     </div>
   </div>
 
+  <!-- Docs page -->
+  <div id="pageDocs" class="page hidden">
+    <nav class="topbar">
+      <span class="brand-name">SudoAuth</span>
+      <button class="btn-ghost" id="docsBackBtn">Back</button>
+    </nav>
+    <div class="dashboard docs">
+      <div class="dash-card">
+        <h2 class="card-title">OAuth 2.0 Integration Guide</h2>
+        <p class="doc-text">SudoAuth implements the OAuth 2.0 Authorization Code flow. To integrate, first <a href="#" id="docsRequestLink">request access</a> to get your credentials.</p>
+      </div>
+
+      <div class="dash-card">
+        <h3 class="sub-title">Endpoints</h3>
+        <div class="endpoint-list">
+          <div class="endpoint"><span class="method get">GET</span><code>/.well-known/openid-configuration</code><span class="ep-desc">OIDC discovery document</span></div>
+          <div class="endpoint"><span class="method get">GET</span><code>/jwks</code><span class="ep-desc">Public keys for token verification</span></div>
+          <div class="endpoint"><span class="method get">GET</span><code>/oauth/authorize</code><span class="ep-desc">Authorization endpoint</span></div>
+          <div class="endpoint"><span class="method post">POST</span><code>/oauth/token</code><span class="ep-desc">Token exchange</span></div>
+          <div class="endpoint"><span class="method get">GET</span><code>/oauth/userinfo</code><span class="ep-desc">Get user profile (requires token)</span></div>
+          <div class="endpoint"><span class="method post">POST</span><code>/auth/login</code><span class="ep-desc">Direct login (first-party apps)</span></div>
+          <div class="endpoint"><span class="method post">POST</span><code>/auth/signup</code><span class="ep-desc">Create account</span></div>
+          <div class="endpoint"><span class="method get">GET</span><code>/auth/verify</code><span class="ep-desc">Verify a JWT token</span></div>
+        </div>
+      </div>
+
+      <div class="dash-card">
+        <h3 class="sub-title">Step 1 — Redirect user to authorize</h3>
+        <pre class="code-block">const url = new URL('https://auth.sudohq.me/oauth/authorize');
+url.searchParams.set('client_id', YOUR_CLIENT_ID);
+url.searchParams.set('redirect_uri', YOUR_REDIRECT_URI);
+url.searchParams.set('response_type', 'code');
+url.searchParams.set('state', crypto.randomUUID()); // CSRF protection
+url.searchParams.set('email', userEmail);     // collected by your UI
+url.searchParams.set('password', userPass);   // collected by your UI
+
+window.location.href = url.toString();
+// Redirects to YOUR_REDIRECT_URI?code=...&state=...</pre>
+      </div>
+
+      <div class="dash-card">
+        <h3 class="sub-title">Step 2 — Exchange code for token</h3>
+        <pre class="code-block">// On your server (never expose client_secret in frontend)
+const res = await fetch('https://auth.sudohq.me/oauth/token', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    grant_type: 'authorization_code',
+    code: codeFromQuery,
+    client_id: YOUR_CLIENT_ID,
+    client_secret: YOUR_CLIENT_SECRET,
+    redirect_uri: YOUR_REDIRECT_URI,
+  }),
+});
+const { access_token, refresh_token } = await res.json();</pre>
+      </div>
+
+      <div class="dash-card">
+        <h3 class="sub-title">Step 3 — Get user info</h3>
+        <pre class="code-block">const res = await fetch('https://auth.sudohq.me/oauth/userinfo', {
+  headers: { Authorization: `Bearer ${access_token}` },
+});
+const user = await res.json();
+// { sub, email, name }</pre>
+      </div>
+
+      <div class="dash-card">
+        <h3 class="sub-title">Step 4 — Refresh the token</h3>
+        <pre class="code-block">// access_token expires in 15 minutes
+const res = await fetch('https://auth.sudohq.me/oauth/token', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    grant_type: 'refresh_token',
+    refresh_token: storedRefreshToken,
+    client_id: YOUR_CLIENT_ID,
+    client_secret: YOUR_CLIENT_SECRET,
+  }),
+});
+const { access_token, refresh_token } = await res.json();
+// refresh_token is rotated on each use</pre>
+      </div>
+
+      <div class="dash-card">
+        <h3 class="sub-title">Verify a token (any service)</h3>
+        <pre class="code-block">// No database call needed — uses public key from /jwks
+const res = await fetch('https://auth.sudohq.me/auth/verify', {
+  headers: { Authorization: `Bearer ${token}` },
+});
+const { valid, decoded } = await res.json();
+// decoded.sub = userId, decoded.email, decoded.exp</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Request Access page -->
+  <div id="pageRequest" class="page hidden">
+    <nav class="topbar">
+      <span class="brand-name">SudoAuth</span>
+      <button class="btn-ghost" id="requestBackBtn">Back</button>
+    </nav>
+    <div class="dashboard">
+      <div class="dash-card" id="requestFormCard">
+        <h2 class="card-title">Request OAuth Access</h2>
+        <p class="doc-text">Fill in your app details. Once approved, you will receive your <code>clientId</code> and <code>clientSecret</code> by email.</p>
+        <form id="requestForm" autocomplete="off">
+          <div class="field">
+            <label>App name</label>
+            <input class="input" id="reqAppName" type="text" placeholder="My Application" required />
+          </div>
+          <div class="field">
+            <label>Redirect URI</label>
+            <input class="input" id="reqRedirect" type="url" placeholder="https://myapp.com/callback" required />
+          </div>
+          <div class="field">
+            <label>Contact email</label>
+            <input class="input" id="reqEmail" type="email" placeholder="you@example.com" required />
+          </div>
+          <div class="field">
+            <label>Description <span class="optional">(optional)</span></label>
+            <input class="input" id="reqDesc" type="text" placeholder="What does your app do?" />
+          </div>
+          <p class="error" id="reqError"></p>
+          <button class="btn-primary" type="submit" id="reqBtn">Submit request</button>
+        </form>
+      </div>
+      <div id="requestSuccess" class="dash-card hidden">
+        <p class="success-msg">Request submitted. You will receive your credentials by email once approved.</p>
+      </div>
+    </div>
+  </div>
+
   <!-- Admin page -->
   <div id="pageAdmin" class="page hidden">
     <nav class="topbar">
@@ -107,8 +241,15 @@
       </div>
 
       <div id="adminPanel" class="hidden">
+        <!-- Pending requests -->
         <div class="dash-card">
-          <h2 class="card-title">Register OAuth client</h2>
+          <h2 class="card-title">Pending requests</h2>
+          <div id="pendingList"><p class="muted">Loading...</p></div>
+        </div>
+
+        <!-- Register client directly -->
+        <div class="dash-card">
+          <h2 class="card-title">Register client directly</h2>
           <form id="registerForm" autocomplete="off">
             <div class="field">
               <label>App name</label>
