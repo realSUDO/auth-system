@@ -163,6 +163,17 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
   document.getElementById('registerForm').reset();
 });
 
+// ---- Copy buttons ----
+document.addEventListener('click', (e) => {
+  if (!e.target.classList.contains('copy-btn')) return;
+  const code = e.target.nextElementSibling.textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    e.target.textContent = 'Copied';
+    e.target.classList.add('copied');
+    setTimeout(() => { e.target.textContent = 'Copy'; e.target.classList.remove('copied'); }, 2000);
+  });
+});
+
 // ---- Init ----
 const user = getUser();
 const token = getToken();

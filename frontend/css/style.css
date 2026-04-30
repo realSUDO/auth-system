@@ -628,3 +628,27 @@ label {
   .docs-sidebar { display: none; }
   .docs-content { padding: 2rem 1.5rem; }
 }
+
+/* ---- Darker docs background ---- */
+#pageDocs { background: var(--surface2); }
+.docs-content { background: var(--surface2); }
+.docs-sidebar { background: #1a1820; border-right-color: #333; }
+
+/* ---- Copy button ---- */
+.code-wrap { position: relative; }
+.copy-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.55rem;
+  transition: background 0.15s, color 0.15s;
+  font-family: var(--font-ui);
+}
+.copy-btn:hover { background: rgba(255,255,255,0.1); color: var(--light); }
+.copy-btn.copied { color: #6dcc8a; border-color: rgba(80,200,120,0.3); }

@@ -115,6 +115,7 @@
   </div>
 
   <!-- Docs page -->
+  <!-- Docs page -->
   <div id="pageDocs" class="page hidden">
     <nav class="topbar">
       <span class="brand-name">SudoAuth</span>
@@ -124,186 +125,175 @@
       </div>
     </nav>
     <div class="docs-layout">
-      <!-- Sidebar -->
       <aside class="docs-sidebar">
-        <p class="sidebar-section">Getting started</p>
-        <a class="sidebar-link active" href="#overview">Overview</a>
+        <p class="sidebar-section">Overview</p>
+        <a class="sidebar-link active" href="#intro">Introduction</a>
         <a class="sidebar-link" href="#credentials">Get credentials</a>
-        <p class="sidebar-section">OAuth flow</p>
-        <a class="sidebar-link" href="#step1">1. Authorize</a>
-        <a class="sidebar-link" href="#step2">2. Exchange code</a>
-        <a class="sidebar-link" href="#step3">3. Get user info</a>
-        <a class="sidebar-link" href="#step4">4. Refresh token</a>
+        <p class="sidebar-section">Adding SudoAuth to your app</p>
+        <a class="sidebar-link" href="#step1">Step 1 — Login form</a>
+        <a class="sidebar-link" href="#step2">Step 2 — Handle callback</a>
+        <a class="sidebar-link" href="#step3">Step 3 — Exchange for tokens</a>
+        <a class="sidebar-link" href="#step4">Step 4 — Get the user</a>
+        <a class="sidebar-link" href="#step5">Step 5 — Keep them logged in</a>
         <p class="sidebar-section">Reference</p>
-        <a class="sidebar-link" href="#endpoints">Endpoints</a>
-        <a class="sidebar-link" href="#token">Token format</a>
-        <a class="sidebar-link" href="#verify">Verify tokens</a>
+        <a class="sidebar-link" href="#endpoints">All endpoints</a>
+        <a class="sidebar-link" href="#token">Token payload</a>
+        <a class="sidebar-link" href="#verify">Verify without a server call</a>
       </aside>
-
-      <!-- Content -->
       <main class="docs-content">
 
-        <section id="overview" class="doc-section">
-          <h1 class="doc-h1">OAuth 2.0 Integration Guide</h1>
-          <p class="doc-p">SudoAuth implements the <strong>OAuth 2.0 Authorization Code</strong> flow with RS256-signed JWTs. It is compatible with the OIDC standard — any library that supports OIDC discovery will work out of the box.</p>
-          <div class="callout">
-            <span class="callout-label">Base URL</span>
-            <code>https://auth.sudohq.me</code>
-          </div>
+        <section id="intro" class="doc-section">
+          <h1 class="doc-h1">Adding SudoAuth to your app</h1>
+          <p class="doc-p">SudoAuth handles login and identity so you don't have to. Your app redirects users here, they authenticate, and you get back a signed JWT with their info. That's the whole thing.</p>
+          <p class="doc-p">It uses the standard OAuth 2.0 Authorization Code flow — the same pattern used by Google, GitHub, and every other major auth provider. If you've integrated one of those before, this will feel familiar.</p>
+          <div class="callout"><span class="callout-label">Base URL</span><code>https://auth.sudohq.me</code></div>
         </section>
 
         <section id="credentials" class="doc-section">
-          <h2 class="doc-h2">Get credentials</h2>
-          <p class="doc-p">Before integrating, you need a <code>clientId</code> and <code>clientSecret</code>. <a href="#" id="docsRequestLink2">Submit a request</a> with your app name and redirect URI. You will receive credentials by email once approved.</p>
-          <p class="doc-p">You will receive:</p>
-          <ul class="doc-list">
-            <li><code>clientId</code> — public identifier for your app</li>
-            <li><code>clientSecret</code> — keep this server-side only, never expose in frontend code</li>
-          </ul>
+          <h2 class="doc-h2">Get your credentials first</h2>
+          <p class="doc-p">You need a <code>clientId</code> and <code>clientSecret</code> before anything else. <a href="#" id="docsRequestLink2">Submit a request</a> with your app name and the redirect URI you'll be using. You'll get the credentials by email.</p>
+          <p class="doc-p">Keep the <code>clientSecret</code> on your server. Never put it in frontend code.</p>
         </section>
 
         <section id="step1" class="doc-section">
-          <div class="step-header">
-            <span class="step-num">1</span>
-            <h2 class="doc-h2">Redirect user to authorize</h2>
-          </div>
-          <p class="doc-p">Build the authorization URL and redirect the user. Your UI collects the email and password — there is no hosted login page.</p>
-          <pre class="code-block">const state = crypto.randomUUID(); // store this to verify later
+          <div class="step-header"><span class="step-num">1</span><h2 class="doc-h2">Add a login form to your app</h2></div>
+          <p class="doc-p">SudoAuth doesn't have a hosted login page — your app collects the email and password, then passes them along. You keep full control over how your login UI looks.</p>
+          <div class="code-wrap"><button class="copy-btn">Copy</button><pre class="code-block">const state = crypto.randomUUID();
 sessionStorage.setItem('oauth_state', state);
 
 const url = new URL('https://auth.sudohq.me/oauth/authorize');
-url.searchParams.set('client_id',     YOUR_CLIENT_ID);
-url.searchParams.set('redirect_uri',  YOUR_REDIRECT_URI);
+url.searchParams.set('client_id',     'YOUR_CLIENT_ID');
+url.searchParams.set('redirect_uri',  'https://yourapp.com/callback');
 url.searchParams.set('response_type', 'code');
 url.searchParams.set('state',         state);
-url.searchParams.set('email',         userEmail);    // from your login form
-url.searchParams.set('password',      userPassword); // from your login form
+url.searchParams.set('email',         form.email.value);
+url.searchParams.set('password',      form.password.value);
 
-window.location.href = url.toString();</pre>
-          <p class="doc-p">On success, the user is redirected to <code>YOUR_REDIRECT_URI?code=...&state=...</code></p>
-          <div class="callout callout-warn">Always verify the <code>state</code> parameter matches what you stored before proceeding.</div>
+window.location.href = url.toString();</pre></div>
+          <div class="callout callout-warn"><span class="callout-label">Note</span>The <code>state</code> parameter protects against CSRF. Always verify it matches when you receive the callback.</div>
         </section>
 
         <section id="step2" class="doc-section">
-          <div class="step-header">
-            <span class="step-num">2</span>
-            <h2 class="doc-h2">Exchange code for tokens</h2>
-          </div>
-          <p class="doc-p">On your server, exchange the code for an access token and refresh token. Never do this from the browser — it would expose your <code>clientSecret</code>.</p>
-          <pre class="code-block">// server-side only
+          <div class="step-header"><span class="step-num">2</span><h2 class="doc-h2">Handle the callback</h2></div>
+          <p class="doc-p">After the user authenticates, they're redirected back to your <code>redirect_uri</code> with a <code>code</code> and <code>state</code> in the query string.</p>
+          <div class="code-wrap"><button class="copy-btn">Copy</button><pre class="code-block">const params = new URLSearchParams(window.location.search);
+const code  = params.get('code');
+const state = params.get('state');
+
+if (state !== sessionStorage.getItem('oauth_state')) {
+  throw new Error('State mismatch — possible CSRF attack');
+}
+
+// Send the code to your server
+await fetch('/auth/callback', {
+  method: 'POST',
+  body: JSON.stringify({ code }),
+});</pre></div>
+        </section>
+
+        <section id="step3" class="doc-section">
+          <div class="step-header"><span class="step-num">3</span><h2 class="doc-h2">Exchange the code for tokens</h2></div>
+          <p class="doc-p">This part happens on your server. The code is short-lived (5 minutes) and single-use — exchange it immediately.</p>
+          <div class="code-wrap"><button class="copy-btn">Copy</button><pre class="code-block">// server-side — Node.js
 const res = await fetch('https://auth.sudohq.me/oauth/token', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     grant_type:    'authorization_code',
-    code:          req.query.code,
-    client_id:     YOUR_CLIENT_ID,
-    client_secret: YOUR_CLIENT_SECRET,
-    redirect_uri:  YOUR_REDIRECT_URI,
+    code:          req.body.code,
+    client_id:     process.env.CLIENT_ID,
+    client_secret: process.env.CLIENT_SECRET,
+    redirect_uri:  'https://yourapp.com/callback',
   }),
 });
 
-const { access_token, refresh_token, expires_in } = await res.json();
-// access_token expires in 15 minutes (expires_in = 900)
-// store refresh_token securely (httpOnly cookie or server session)</pre>
+const { access_token, refresh_token } = await res.json();
+// store refresh_token in an httpOnly cookie or session</pre></div>
         </section>
 
-        <section id="step3" class="doc-section">
-          <div class="step-header">
-            <span class="step-num">3</span>
-            <h2 class="doc-h2">Get user info</h2>
-          </div>
-          <p class="doc-p">Use the access token to fetch the authenticated user's profile.</p>
-          <pre class="code-block">const res = await fetch('https://auth.sudohq.me/oauth/userinfo', {
+        <section id="step4" class="doc-section">
+          <div class="step-header"><span class="step-num">4</span><h2 class="doc-h2">Get the user's info</h2></div>
+          <p class="doc-p">Use the access token to fetch who just logged in.</p>
+          <div class="code-wrap"><button class="copy-btn">Copy</button><pre class="code-block">const res = await fetch('https://auth.sudohq.me/oauth/userinfo', {
   headers: { Authorization: `Bearer ${access_token}` },
 });
 
 const user = await res.json();
-// {
-//   sub:   "user_id",
-//   email: "user@example.com",
-//   name:  "User Name"
-// }</pre>
+// { sub: "clxyz123", email: "user@example.com", name: "Jane" }
+
+// Use user.sub as the stable identifier in your own DB
+req.session.userId = user.sub;</pre></div>
+          <p class="doc-p">At this point your user is logged in. <code>user.sub</code> is stable and unique — use it as your foreign key.</p>
         </section>
 
-        <section id="step4" class="doc-section">
-          <div class="step-header">
-            <span class="step-num">4</span>
-            <h2 class="doc-h2">Refresh the access token</h2>
-          </div>
-          <p class="doc-p">Access tokens expire after 15 minutes. Use the refresh token to get a new one. Refresh tokens are rotated on every use — always store the new one.</p>
-          <pre class="code-block">const res = await fetch('https://auth.sudohq.me/oauth/token', {
+        <section id="step5" class="doc-section">
+          <div class="step-header"><span class="step-num">5</span><h2 class="doc-h2">Keep them logged in</h2></div>
+          <p class="doc-p">Access tokens expire after 15 minutes. Use the refresh token to get a new one silently — no login prompt needed. Refresh tokens are rotated on every use, so always save the new one.</p>
+          <div class="code-wrap"><button class="copy-btn">Copy</button><pre class="code-block">const res = await fetch('https://auth.sudohq.me/oauth/token', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     grant_type:    'refresh_token',
     refresh_token: storedRefreshToken,
-    client_id:     YOUR_CLIENT_ID,
-    client_secret: YOUR_CLIENT_SECRET,
+    client_id:     process.env.CLIENT_ID,
+    client_secret: process.env.CLIENT_SECRET,
   }),
 });
 
 const { access_token, refresh_token } = await res.json();
-// store the new refresh_token — the old one is now invalid</pre>
+// old refresh_token is now invalid — save the new one</pre></div>
         </section>
 
         <section id="endpoints" class="doc-section">
-          <h2 class="doc-h2">Endpoints</h2>
+          <h2 class="doc-h2">All endpoints</h2>
           <div class="endpoint-table">
-            <div class="ep-row header">
-              <span>Method</span><span>Path</span><span>Description</span>
-            </div>
+            <div class="ep-row header"><span>Method</span><span>Path</span><span>What it does</span></div>
             <div class="ep-row"><span class="method get">GET</span><code>/.well-known/openid-configuration</code><span>OIDC discovery document</span></div>
-            <div class="ep-row"><span class="method get">GET</span><code>/jwks</code><span>Public keys (JWK format)</span></div>
-            <div class="ep-row"><span class="method get">GET</span><code>/oauth/authorize</code><span>Authorization endpoint</span></div>
-            <div class="ep-row"><span class="method post">POST</span><code>/oauth/token</code><span>Token exchange + refresh</span></div>
-            <div class="ep-row"><span class="method get">GET</span><code>/oauth/userinfo</code><span>User profile (Bearer token)</span></div>
-            <div class="ep-row"><span class="method post">POST</span><code>/auth/login</code><span>Direct login (first-party apps)</span></div>
-            <div class="ep-row"><span class="method post">POST</span><code>/auth/signup</code><span>Create account</span></div>
-            <div class="ep-row"><span class="method get">GET</span><code>/auth/verify</code><span>Verify a JWT (no DB call)</span></div>
+            <div class="ep-row"><span class="method get">GET</span><code>/jwks</code><span>Public keys in JWK format</span></div>
+            <div class="ep-row"><span class="method get">GET</span><code>/oauth/authorize</code><span>Start the auth flow</span></div>
+            <div class="ep-row"><span class="method post">POST</span><code>/oauth/token</code><span>Exchange code or refresh token</span></div>
+            <div class="ep-row"><span class="method get">GET</span><code>/oauth/userinfo</code><span>Get user profile (needs Bearer token)</span></div>
+            <div class="ep-row"><span class="method post">POST</span><code>/auth/login</code><span>Direct login — for your own apps</span></div>
+            <div class="ep-row"><span class="method post">POST</span><code>/auth/signup</code><span>Create a new account</span></div>
+            <div class="ep-row"><span class="method get">GET</span><code>/auth/verify</code><span>Verify a JWT (no DB call needed)</span></div>
           </div>
         </section>
 
         <section id="token" class="doc-section">
-          <h2 class="doc-h2">Token format</h2>
-          <p class="doc-p">Access tokens are RS256-signed JWTs. Decoded payload:</p>
-          <pre class="code-block">{
-  "sub":   "user_cuid",       // user ID
+          <h2 class="doc-h2">What's inside the token</h2>
+          <p class="doc-p">Access tokens are RS256-signed JWTs. Decode one and you'll see:</p>
+          <div class="code-wrap"><button class="copy-btn">Copy</button><pre class="code-block">{
+  "sub":   "clxyz123abc",
   "email": "user@example.com",
   "type":  "access",
-  "iat":   1234567890,        // issued at
-  "exp":   1234568790,        // expires at (15 min)
+  "iat":   1714500000,
+  "exp":   1714500900,
   "iss":   "https://auth.sudohq.me"
-}</pre>
+}</pre></div>
         </section>
 
         <section id="verify" class="doc-section">
           <h2 class="doc-h2">Verify tokens without calling this server</h2>
-          <p class="doc-p">Because tokens are signed with an RSA private key, any service can verify them using the public key from <code>/jwks</code> — no network call to this server needed at runtime.</p>
-          <pre class="code-block">// Using jsonwebtoken (Node.js)
-import jwt from 'jsonwebtoken';
+          <p class="doc-p">Any service can verify tokens locally using the public key from <code>/jwks</code> — no network call to SudoAuth needed at runtime.</p>
+          <div class="code-wrap"><button class="copy-btn">Copy</button><pre class="code-block">import jwt from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 
-const client = jwksClient({ jwksUri: 'https://auth.sudohq.me/jwks' });
-
+const client = jwksClient({ jwksUri: 'https://auth.sudohq.me/jwks', cache: true });
 const key = await client.getSigningKey('auth-key-1');
 const decoded = jwt.verify(token, key.getPublicKey(), {
   algorithms: ['RS256'],
   issuer: 'https://auth.sudohq.me',
-});
-// decoded.sub, decoded.email, decoded.exp</pre>
-          <p class="doc-p">Or use the verify endpoint directly:</p>
-          <pre class="code-block">const res = await fetch('https://auth.sudohq.me/auth/verify', {
+});</pre></div>
+          <p class="doc-p">Or just hit the verify endpoint:</p>
+          <div class="code-wrap"><button class="copy-btn">Copy</button><pre class="code-block">const { valid, decoded } = await fetch('https://auth.sudohq.me/auth/verify', {
   headers: { Authorization: `Bearer ${token}` },
-});
-const { valid, decoded } = await res.json();</pre>
+}).then(r => r.json());</pre></div>
         </section>
 
       </main>
     </div>
   </div>
 
-  <!-- Request Access page -->
   <div id="pageRequest" class="page hidden">
     <nav class="topbar">
       <span class="brand-name">SudoAuth</span>
