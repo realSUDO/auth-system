@@ -56,6 +56,7 @@ document.getElementById('logoutBtn').addEventListener('click', logout);
 document.getElementById('docsLink').addEventListener('click', (e) => { e.preventDefault(); showPage('pageDocs'); });
 document.getElementById('docsBackBtn').addEventListener('click', () => showPage('pageAuth'));
 document.getElementById('docsRequestLink').addEventListener('click', (e) => { e.preventDefault(); showPage('pageRequest'); });
+document.getElementById('docsRequestLink2').addEventListener('click', (e) => { e.preventDefault(); showPage('pageRequest'); });
 document.getElementById('requestLink').addEventListener('click', (e) => { e.preventDefault(); showPage('pageRequest'); });
 document.getElementById('requestBackBtn').addEventListener('click', () => showPage('pageAuth'));
 

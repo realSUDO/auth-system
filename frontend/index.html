@@ -13,14 +13,39 @@
   <!-- Auth page (logged out) -->
   <div id="pageAuth" class="split-layout">
     <div class="split-left">
-      <div class="brand-block">
-        <span class="brand-name">SudoAuth</span>
-        <p class="brand-tagline">Identity infrastructure for your apps.</p>
-      </div>
-      <div class="brand-footer">
-        <a href="#" id="docsLink">Docs</a>
-        <a href="#" id="requestLink">Request Access</a>
-        <a href="#" id="adminLink">Admin</a>
+      <div class="split-left-inner">
+        <div class="brand-block">
+          <span class="brand-name">SudoAuth</span>
+          <p class="brand-tagline">Open identity infrastructure.<br/>OAuth 2.0 + OIDC for your apps.</p>
+        </div>
+        <div class="feature-list">
+          <div class="feature-item">
+            <span class="feature-dot"></span>
+            <div>
+              <p class="feature-title">OAuth 2.0 Authorization Code</p>
+              <p class="feature-desc">Standard flow with PKCE-ready endpoints and refresh token rotation.</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <span class="feature-dot"></span>
+            <div>
+              <p class="feature-title">RS256 signed JWTs</p>
+              <p class="feature-desc">Asymmetric keys — any service can verify tokens without calling this server.</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <span class="feature-dot"></span>
+            <div>
+              <p class="feature-title">OIDC Discovery</p>
+              <p class="feature-desc">Standard <code>/.well-known/openid-configuration</code> and JWKS endpoint.</p>
+            </div>
+          </div>
+        </div>
+        <div class="brand-footer">
+          <a href="#" id="docsLink">Docs</a>
+          <a href="#" id="requestLink">Request Access</a>
+          <a href="#" id="adminLink">Admin</a>
+        </div>
       </div>
     </div>
     <div class="split-right">
@@ -93,94 +118,188 @@
   <div id="pageDocs" class="page hidden">
     <nav class="topbar">
       <span class="brand-name">SudoAuth</span>
-      <button class="btn-ghost" id="docsBackBtn">Back</button>
+      <div class="topbar-right">
+        <a class="topbar-link" href="#" id="docsRequestLink">Request Access</a>
+        <button class="btn-ghost" id="docsBackBtn">Back</button>
+      </div>
     </nav>
-    <div class="dashboard docs">
-      <div class="dash-card">
-        <h2 class="card-title">OAuth 2.0 Integration Guide</h2>
-        <p class="doc-text">SudoAuth implements the OAuth 2.0 Authorization Code flow. To integrate, first <a href="#" id="docsRequestLink">request access</a> to get your credentials.</p>
-      </div>
+    <div class="docs-layout">
+      <!-- Sidebar -->
+      <aside class="docs-sidebar">
+        <p class="sidebar-section">Getting started</p>
+        <a class="sidebar-link active" href="#overview">Overview</a>
+        <a class="sidebar-link" href="#credentials">Get credentials</a>
+        <p class="sidebar-section">OAuth flow</p>
+        <a class="sidebar-link" href="#step1">1. Authorize</a>
+        <a class="sidebar-link" href="#step2">2. Exchange code</a>
+        <a class="sidebar-link" href="#step3">3. Get user info</a>
+        <a class="sidebar-link" href="#step4">4. Refresh token</a>
+        <p class="sidebar-section">Reference</p>
+        <a class="sidebar-link" href="#endpoints">Endpoints</a>
+        <a class="sidebar-link" href="#token">Token format</a>
+        <a class="sidebar-link" href="#verify">Verify tokens</a>
+      </aside>
 
-      <div class="dash-card">
-        <h3 class="sub-title">Endpoints</h3>
-        <div class="endpoint-list">
-          <div class="endpoint"><span class="method get">GET</span><code>/.well-known/openid-configuration</code><span class="ep-desc">OIDC discovery document</span></div>
-          <div class="endpoint"><span class="method get">GET</span><code>/jwks</code><span class="ep-desc">Public keys for token verification</span></div>
-          <div class="endpoint"><span class="method get">GET</span><code>/oauth/authorize</code><span class="ep-desc">Authorization endpoint</span></div>
-          <div class="endpoint"><span class="method post">POST</span><code>/oauth/token</code><span class="ep-desc">Token exchange</span></div>
-          <div class="endpoint"><span class="method get">GET</span><code>/oauth/userinfo</code><span class="ep-desc">Get user profile (requires token)</span></div>
-          <div class="endpoint"><span class="method post">POST</span><code>/auth/login</code><span class="ep-desc">Direct login (first-party apps)</span></div>
-          <div class="endpoint"><span class="method post">POST</span><code>/auth/signup</code><span class="ep-desc">Create account</span></div>
-          <div class="endpoint"><span class="method get">GET</span><code>/auth/verify</code><span class="ep-desc">Verify a JWT token</span></div>
-        </div>
-      </div>
+      <!-- Content -->
+      <main class="docs-content">
 
-      <div class="dash-card">
-        <h3 class="sub-title">Step 1 — Redirect user to authorize</h3>
-        <pre class="code-block">const url = new URL('https://auth.sudohq.me/oauth/authorize');
-url.searchParams.set('client_id', YOUR_CLIENT_ID);
-url.searchParams.set('redirect_uri', YOUR_REDIRECT_URI);
+        <section id="overview" class="doc-section">
+          <h1 class="doc-h1">OAuth 2.0 Integration Guide</h1>
+          <p class="doc-p">SudoAuth implements the <strong>OAuth 2.0 Authorization Code</strong> flow with RS256-signed JWTs. It is compatible with the OIDC standard — any library that supports OIDC discovery will work out of the box.</p>
+          <div class="callout">
+            <span class="callout-label">Base URL</span>
+            <code>https://auth.sudohq.me</code>
+          </div>
+        </section>
+
+        <section id="credentials" class="doc-section">
+          <h2 class="doc-h2">Get credentials</h2>
+          <p class="doc-p">Before integrating, you need a <code>clientId</code> and <code>clientSecret</code>. <a href="#" id="docsRequestLink2">Submit a request</a> with your app name and redirect URI. You will receive credentials by email once approved.</p>
+          <p class="doc-p">You will receive:</p>
+          <ul class="doc-list">
+            <li><code>clientId</code> — public identifier for your app</li>
+            <li><code>clientSecret</code> — keep this server-side only, never expose in frontend code</li>
+          </ul>
+        </section>
+
+        <section id="step1" class="doc-section">
+          <div class="step-header">
+            <span class="step-num">1</span>
+            <h2 class="doc-h2">Redirect user to authorize</h2>
+          </div>
+          <p class="doc-p">Build the authorization URL and redirect the user. Your UI collects the email and password — there is no hosted login page.</p>
+          <pre class="code-block">const state = crypto.randomUUID(); // store this to verify later
+sessionStorage.setItem('oauth_state', state);
+
+const url = new URL('https://auth.sudohq.me/oauth/authorize');
+url.searchParams.set('client_id',     YOUR_CLIENT_ID);
+url.searchParams.set('redirect_uri',  YOUR_REDIRECT_URI);
 url.searchParams.set('response_type', 'code');
-url.searchParams.set('state', crypto.randomUUID()); // CSRF protection
-url.searchParams.set('email', userEmail);     // collected by your UI
-url.searchParams.set('password', userPass);   // collected by your UI
+url.searchParams.set('state',         state);
+url.searchParams.set('email',         userEmail);    // from your login form
+url.searchParams.set('password',      userPassword); // from your login form
 
-window.location.href = url.toString();
-// Redirects to YOUR_REDIRECT_URI?code=...&state=...</pre>
-      </div>
+window.location.href = url.toString();</pre>
+          <p class="doc-p">On success, the user is redirected to <code>YOUR_REDIRECT_URI?code=...&state=...</code></p>
+          <div class="callout callout-warn">Always verify the <code>state</code> parameter matches what you stored before proceeding.</div>
+        </section>
 
-      <div class="dash-card">
-        <h3 class="sub-title">Step 2 — Exchange code for token</h3>
-        <pre class="code-block">// On your server (never expose client_secret in frontend)
+        <section id="step2" class="doc-section">
+          <div class="step-header">
+            <span class="step-num">2</span>
+            <h2 class="doc-h2">Exchange code for tokens</h2>
+          </div>
+          <p class="doc-p">On your server, exchange the code for an access token and refresh token. Never do this from the browser — it would expose your <code>clientSecret</code>.</p>
+          <pre class="code-block">// server-side only
 const res = await fetch('https://auth.sudohq.me/oauth/token', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    grant_type: 'authorization_code',
-    code: codeFromQuery,
-    client_id: YOUR_CLIENT_ID,
+    grant_type:    'authorization_code',
+    code:          req.query.code,
+    client_id:     YOUR_CLIENT_ID,
     client_secret: YOUR_CLIENT_SECRET,
-    redirect_uri: YOUR_REDIRECT_URI,
+    redirect_uri:  YOUR_REDIRECT_URI,
   }),
 });
-const { access_token, refresh_token } = await res.json();</pre>
-      </div>
 
-      <div class="dash-card">
-        <h3 class="sub-title">Step 3 — Get user info</h3>
-        <pre class="code-block">const res = await fetch('https://auth.sudohq.me/oauth/userinfo', {
+const { access_token, refresh_token, expires_in } = await res.json();
+// access_token expires in 15 minutes (expires_in = 900)
+// store refresh_token securely (httpOnly cookie or server session)</pre>
+        </section>
+
+        <section id="step3" class="doc-section">
+          <div class="step-header">
+            <span class="step-num">3</span>
+            <h2 class="doc-h2">Get user info</h2>
+          </div>
+          <p class="doc-p">Use the access token to fetch the authenticated user's profile.</p>
+          <pre class="code-block">const res = await fetch('https://auth.sudohq.me/oauth/userinfo', {
   headers: { Authorization: `Bearer ${access_token}` },
 });
-const user = await res.json();
-// { sub, email, name }</pre>
-      </div>
 
-      <div class="dash-card">
-        <h3 class="sub-title">Step 4 — Refresh the token</h3>
-        <pre class="code-block">// access_token expires in 15 minutes
-const res = await fetch('https://auth.sudohq.me/oauth/token', {
+const user = await res.json();
+// {
+//   sub:   "user_id",
+//   email: "user@example.com",
+//   name:  "User Name"
+// }</pre>
+        </section>
+
+        <section id="step4" class="doc-section">
+          <div class="step-header">
+            <span class="step-num">4</span>
+            <h2 class="doc-h2">Refresh the access token</h2>
+          </div>
+          <p class="doc-p">Access tokens expire after 15 minutes. Use the refresh token to get a new one. Refresh tokens are rotated on every use — always store the new one.</p>
+          <pre class="code-block">const res = await fetch('https://auth.sudohq.me/oauth/token', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    grant_type: 'refresh_token',
+    grant_type:    'refresh_token',
     refresh_token: storedRefreshToken,
-    client_id: YOUR_CLIENT_ID,
+    client_id:     YOUR_CLIENT_ID,
     client_secret: YOUR_CLIENT_SECRET,
   }),
 });
-const { access_token, refresh_token } = await res.json();
-// refresh_token is rotated on each use</pre>
-      </div>
 
-      <div class="dash-card">
-        <h3 class="sub-title">Verify a token (any service)</h3>
-        <pre class="code-block">// No database call needed — uses public key from /jwks
-const res = await fetch('https://auth.sudohq.me/auth/verify', {
+const { access_token, refresh_token } = await res.json();
+// store the new refresh_token — the old one is now invalid</pre>
+        </section>
+
+        <section id="endpoints" class="doc-section">
+          <h2 class="doc-h2">Endpoints</h2>
+          <div class="endpoint-table">
+            <div class="ep-row header">
+              <span>Method</span><span>Path</span><span>Description</span>
+            </div>
+            <div class="ep-row"><span class="method get">GET</span><code>/.well-known/openid-configuration</code><span>OIDC discovery document</span></div>
+            <div class="ep-row"><span class="method get">GET</span><code>/jwks</code><span>Public keys (JWK format)</span></div>
+            <div class="ep-row"><span class="method get">GET</span><code>/oauth/authorize</code><span>Authorization endpoint</span></div>
+            <div class="ep-row"><span class="method post">POST</span><code>/oauth/token</code><span>Token exchange + refresh</span></div>
+            <div class="ep-row"><span class="method get">GET</span><code>/oauth/userinfo</code><span>User profile (Bearer token)</span></div>
+            <div class="ep-row"><span class="method post">POST</span><code>/auth/login</code><span>Direct login (first-party apps)</span></div>
+            <div class="ep-row"><span class="method post">POST</span><code>/auth/signup</code><span>Create account</span></div>
+            <div class="ep-row"><span class="method get">GET</span><code>/auth/verify</code><span>Verify a JWT (no DB call)</span></div>
+          </div>
+        </section>
+
+        <section id="token" class="doc-section">
+          <h2 class="doc-h2">Token format</h2>
+          <p class="doc-p">Access tokens are RS256-signed JWTs. Decoded payload:</p>
+          <pre class="code-block">{
+  "sub":   "user_cuid",       // user ID
+  "email": "user@example.com",
+  "type":  "access",
+  "iat":   1234567890,        // issued at
+  "exp":   1234568790,        // expires at (15 min)
+  "iss":   "https://auth.sudohq.me"
+}</pre>
+        </section>
+
+        <section id="verify" class="doc-section">
+          <h2 class="doc-h2">Verify tokens without calling this server</h2>
+          <p class="doc-p">Because tokens are signed with an RSA private key, any service can verify them using the public key from <code>/jwks</code> — no network call to this server needed at runtime.</p>
+          <pre class="code-block">// Using jsonwebtoken (Node.js)
+import jwt from 'jsonwebtoken';
+import jwksClient from 'jwks-rsa';
+
+const client = jwksClient({ jwksUri: 'https://auth.sudohq.me/jwks' });
+
+const key = await client.getSigningKey('auth-key-1');
+const decoded = jwt.verify(token, key.getPublicKey(), {
+  algorithms: ['RS256'],
+  issuer: 'https://auth.sudohq.me',
+});
+// decoded.sub, decoded.email, decoded.exp</pre>
+          <p class="doc-p">Or use the verify endpoint directly:</p>
+          <pre class="code-block">const res = await fetch('https://auth.sudohq.me/auth/verify', {
   headers: { Authorization: `Bearer ${token}` },
 });
-const { valid, decoded } = await res.json();
-// decoded.sub = userId, decoded.email, decoded.exp</pre>
-      </div>
+const { valid, decoded } = await res.json();</pre>
+        </section>
+
+      </main>
     </div>
   </div>
 
