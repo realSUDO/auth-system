@@ -121,6 +121,10 @@ export const token = async (req, res) => {
   Returns: { clientId, clientSecret } — store the secret, it won't be shown again
 */
 export const registerClient = async (req, res) => {
+	const adminSecret = req.headers["x-admin-secret"];
+	if (!adminSecret || adminSecret !== process.env.ADMIN_SECRET)
+		return res.status(401).json({ error: "Unauthorized" });
+
 	const { name, redirectUri } = req.body;
 	if (!name || !redirectUri)
 		return res.status(400).json({ error: "name and redirectUri are required" });

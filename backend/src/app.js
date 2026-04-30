@@ -11,8 +11,8 @@ const app = express();
 
 // middleware
 
-app.use(helmet()); // security headers..
-app.use(cors()); // allow frontend to access backend
+app.use(helmet());
+app.use(cors({ origin: true, credentials: true }));
 app.use(morgan("dev")); // log reqs..
 app.use(express.json()); // parse json bodies
 
