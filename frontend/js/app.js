@@ -127,47 +127,16 @@ document.getElementById('adminAuthForm').addEventListener('submit', async (e) =>
   const secret = document.getElementById('adminSecret').value;
   const err = document.getElementById('adminError');
   err.textContent = '';
-  const res = await fetch(`${API}/oauth/requests`, { headers: { 'x-admin-secret': secret } });
+  const res = await fetch(`${API}/oauth/clients`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-admin-secret': secret },
+    body: JSON.stringify({ name: '__ping__', redirectUri: 'http://ping' }),
+  });
   if (res.status === 401) { err.textContent = 'Invalid secret'; return; }
   adminSecret = secret;
   document.getElementById('adminLockCard').classList.add('hidden');
   document.getElementById('adminPanel').classList.remove('hidden');
-  renderPendingRequests(await res.json());
 });
-
-// ---- Pending requests ----
-function renderPendingRequests(requests) {
-  const list = document.getElementById('pendingList');
-  if (!requests.length) { list.innerHTML = '<p class="muted">No pending requests.</p>'; return; }
-  list.innerHTML = requests.map(r => `
-    <div class="request-item" id="req-${r.id}">
-      <div class="req-info">
-        <strong>${r.appName}</strong>
-        <span class="muted">${r.email}</span>
-        <code>${r.redirectUri}</code>
-        ${r.description ? `<span class="muted">${r.description}</span>` : ''}
-      </div>
-      <div class="req-actions">
-        <button class="btn-approve" data-id="${r.id}">Approve</button>
-        <button class="btn-reject" data-id="${r.id}">Reject</button>
-      </div>
-    </div>
-  `).join('');
-
-  list.querySelectorAll('.btn-approve').forEach(btn => btn.addEventListener('click', async () => {
-    const id = btn.dataset.id;
-    btn.disabled = true; btn.textContent = 'Approving...';
-    const res = await fetch(`${API}/oauth/requests/${id}/approve`, { method: 'POST', headers: { 'x-admin-secret': adminSecret } });
-    if (res.ok) document.getElementById(`req-${id}`).remove();
-    else btn.textContent = 'Failed';
-  }));
-
-  list.querySelectorAll('.btn-reject').forEach(btn => btn.addEventListener('click', async () => {
-    const id = btn.dataset.id;
-    const res = await fetch(`${API}/oauth/requests/${id}/reject`, { method: 'POST', headers: { 'x-admin-secret': adminSecret } });
-    if (res.ok) document.getElementById(`req-${id}`).remove();
-  }));
-}
 
 // ---- Register client directly ----
 document.getElementById('registerForm').addEventListener('submit', async (e) => {

@@ -56,15 +56,3 @@ model RefreshToken {
   @@map("refresh_tokens")
 }
 
-model ClientRequest {
-  id          String   @id @default(cuid())
-  appName     String
-  redirectUri String
-  email       String
-  description String?
-  status      String   @default("pending")
-  createdAt   DateTime @default(now())
-
-  @@unique([email, redirectUri])
-  @@map("client_requests")
-}
