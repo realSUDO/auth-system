@@ -2,33 +2,35 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
+import path from "path";
+import { fileURLToPath } from "url";
 
 import authRoutes from "./routes/authRoutes.js";
 import oidcRouter from "./routes/oidcRoutes.js";
-import oauthRoutes from "./routes/oauthRoutes.js"
+import oauthRoutes from "./routes/oauthRoutes.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// middleware
-
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(cors({ origin: true, credentials: true }));
-app.use(morgan("dev")); // log reqs..
-app.use(express.json()); // parse json bodies
+app.use(morgan("dev"));
+app.use(express.json());
 
-// routes
+// Serve frontend
+app.use(express.static(path.join(__dirname, "../../frontend")));
 
-// health
+// Health
 app.get("/health", (_, res) => {
 	res.json({ status: "OK", timestamp: new Date().toISOString() });
 });
 
-// add more routees here later...
-app.use('/', oidcRouter);
+app.use("/", oidcRouter);
 app.use("/auth", authRoutes);
-app.use('/',oauthRoutes);
+app.use("/", oauthRoutes);
 
-// start server
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
 	console.log(`Server running on http://localhost:${PORT}`);
