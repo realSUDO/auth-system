@@ -18,14 +18,14 @@
         <p class="brand-tagline">Identity infrastructure for your apps.</p>
       </div>
       <div class="brand-footer">
-        <a href="#" onclick="showAdmin(event)">Admin</a>
+        <a href="#" id="adminLink">Admin</a>
       </div>
     </div>
     <div class="split-right">
       <div class="form-card">
         <div class="tabs">
-          <button class="tab active" id="tabLogin" onclick="switchTab('login')">Login</button>
-          <button class="tab" id="tabSignup" onclick="switchTab('signup')">Sign up</button>
+          <button class="tab active" id="tabLogin">Login</button>
+          <button class="tab" id="tabSignup">Sign up</button>
         </div>
 
         <form id="loginForm" class="form active" autocomplete="off">
@@ -67,7 +67,7 @@
       <span class="brand-name">SudoAuth</span>
       <div class="topbar-right">
         <span class="topbar-email" id="topbarEmail"></span>
-        <button class="btn-ghost" onclick="logout()">Logout</button>
+        <button class="btn-ghost" id="logoutBtn">Logout</button>
       </div>
     </nav>
     <div class="dashboard">
@@ -91,7 +91,7 @@
   <div id="pageAdmin" class="page hidden">
     <nav class="topbar">
       <span class="brand-name">SudoAuth</span>
-      <button class="btn-ghost" onclick="showPage('pageAuth')">Back</button>
+      <button class="btn-ghost" id="adminBackBtn">Back</button>
     </nav>
     <div class="dashboard">
       <div class="dash-card" id="adminLockCard">

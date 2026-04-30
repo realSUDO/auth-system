@@ -52,6 +52,15 @@ function logout() {
   showPage('pageAuth');
 }
 
+// ---- Tab switching ----
+document.getElementById('tabLogin').addEventListener('click', () => switchTab('login'));
+document.getElementById('tabSignup').addEventListener('click', () => switchTab('signup'));
+
+// ---- Admin / back / logout ----
+document.getElementById('adminLink').addEventListener('click', (e) => { e.preventDefault(); showAdmin(); });
+document.getElementById('adminBackBtn').addEventListener('click', () => showPage('pageAuth'));
+document.getElementById('logoutBtn').addEventListener('click', logout);
+
 // ---- Login ----
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
