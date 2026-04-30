@@ -16,7 +16,7 @@ function clearAuth() {
 }
 
 // ---- Page routing ----
-const PAGES = ['pageAuth', 'pageDashboard', 'pageDocs', 'pageRequest', 'pageAdmin'];
+const PAGES = ['pageAuth', 'pageDashboard', 'pageRequest', 'pageAdmin'];
 
 function showPage(id) {
   PAGES.forEach(p => document.getElementById(p).classList.toggle('hidden', p !== id));
@@ -53,10 +53,6 @@ document.getElementById('tabSignup').addEventListener('click', () => switchTab('
 document.getElementById('adminLink').addEventListener('click', (e) => { e.preventDefault(); showAdmin(); });
 document.getElementById('adminBackBtn').addEventListener('click', () => showPage('pageAuth'));
 document.getElementById('logoutBtn').addEventListener('click', logout);
-document.getElementById('docsLink').addEventListener('click', (e) => { e.preventDefault(); showPage('pageDocs'); });
-document.getElementById('docsBackBtn').addEventListener('click', () => showPage('pageAuth'));
-document.getElementById('docsRequestLink').addEventListener('click', (e) => { e.preventDefault(); showPage('pageRequest'); });
-document.getElementById('docsRequestLink2').addEventListener('click', (e) => { e.preventDefault(); showPage('pageRequest'); });
 document.getElementById('requestLink').addEventListener('click', (e) => { e.preventDefault(); showPage('pageRequest'); });
 document.getElementById('requestBackBtn').addEventListener('click', () => showPage('pageAuth'));
 

@@ -22,6 +22,10 @@ app.use(express.json());
 // Serve frontend
 app.use(express.static(path.join(__dirname, "../frontend")));
 
+// Named routes
+app.get("/docs", (_, res) => res.sendFile(path.join(__dirname, "../frontend/docs.html")));
+app.get("/request", (_, res) => res.sendFile(path.join(__dirname, "../frontend/index.html")));
+
 // Health
 app.get("/health", (_, res) => {
 	res.json({ status: "OK", timestamp: new Date().toISOString() });

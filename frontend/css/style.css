@@ -24,8 +24,8 @@ body {
   font-family: var(--font-ui);
   background: var(--bg);
   color: var(--text);
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 16px;
+  line-height: 1.6;
 }
 
 /* ---- Utilities ---- */
@@ -57,16 +57,16 @@ body {
 
 .brand-name {
   font-family: var(--font-brand);
-  font-size: 2rem;
+  font-size: 2.8rem;
   color: var(--pale);
   letter-spacing: 0.05em;
 }
 
 .brand-tagline {
   color: var(--muted);
-  font-size: 0.95rem;
-  max-width: 260px;
-  line-height: 1.6;
+  font-size: 1.05rem;
+  max-width: 300px;
+  line-height: 1.7;
 }
 
 .brand-footer a {
@@ -87,7 +87,7 @@ body {
 /* ---- Form card ---- */
 .form-card {
   width: 100%;
-  max-width: 380px;
+  max-width: 440px;
 }
 
 .tabs {
@@ -132,8 +132,8 @@ label {
   border-radius: var(--radius);
   color: var(--text);
   font-family: var(--font-ui);
-  font-size: 0.9rem;
-  padding: 0.65rem 0.9rem;
+  font-size: 1rem;
+  padding: 0.8rem 1rem;
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
   width: 100%;
@@ -157,9 +157,9 @@ label {
   color: #fff;
   cursor: pointer;
   font-family: var(--font-ui);
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 500;
-  padding: 0.7rem;
+  padding: 0.85rem;
   transition: background 0.15s, transform 0.1s;
   width: 100%;
   margin-top: 0.3rem;
