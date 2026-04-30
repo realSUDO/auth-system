@@ -3,5 +3,6 @@ dist/
 
 # secrets
 .env
+*.key
 backend/src/utils/keys/private.key
 backend/src/utils/keys/public.key

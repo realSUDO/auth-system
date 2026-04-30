@@ -1,0 +1,70 @@
+### Health
+GET http://localhost:8080/health
+
+### OIDC Discovery
+GET http://localhost:8080/.well-known/openid-configuration
+
+### JWKS
+GET http://localhost:8080/jwks
+
+### Signup
+POST http://localhost:8080/auth/signup
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "test@test.com",
+  "password": "password123"
+}
+
+### Login
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "password123"
+}
+
+### Verify token (paste accessToken from login response)
+GET http://localhost:8080/auth/verify
+Authorization: Bearer ACCESS_TOKEN_HERE
+
+### Userinfo (paste accessToken from login response)
+GET http://localhost:8080/oauth/userinfo
+Authorization: Bearer ACCESS_TOKEN_HERE
+
+### Register OAuth client
+POST http://localhost:8080/oauth/clients
+Content-Type: application/json
+
+{
+  "name": "BoxCast",
+  "redirectUri": "http://localhost:3000/callback"
+}
+
+### OAuth authorize (paste clientId from register response, will redirect with code)
+GET http://localhost:8080/oauth/authorize?client_id=CLIENT_ID_HERE&redirect_uri=http://localhost:3000/callback&response_type=code&state=xyz123&email=test@test.com&password=password123
+
+### OAuth token exchange (paste code from authorize redirect)
+POST http://localhost:8080/oauth/token
+Content-Type: application/json
+
+{
+  "grant_type": "authorization_code",
+  "code": "CODE_HERE",
+  "client_id": "CLIENT_ID_HERE",
+  "client_secret": "CLIENT_SECRET_HERE",
+  "redirect_uri": "http://localhost:3000/callback"
+}
+
+### Refresh token (paste refresh_token from token response)
+POST http://localhost:8080/oauth/token
+Content-Type: application/json
+
+{
+  "grant_type": "refresh_token",
+  "refresh_token": "REFRESH_TOKEN_HERE",
+  "client_id": "CLIENT_ID_HERE",
+  "client_secret": "CLIENT_SECRET_HERE"
+}

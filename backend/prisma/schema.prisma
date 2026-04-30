@@ -7,37 +7,51 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model user {
-  id     String    @id @default(cuid())
-  name   String?
-  email  String    @unique
-  password String   
+  id        String    @id @default(cuid())
+  name      String?
+  email     String    @unique
+  password  String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
+  refreshTokens RefreshToken[]
 
   @@map("users")
 }
 
 model OAuthClient {
-	id    String  @id @default(cuid())
-	clientId	String  @unique
-	clientSecret String
-	redirectUri String
-	name String
-	createdAt DateTime @default(now())
-	@@map("oauth_clients")
+  id           String   @id @default(cuid())
+  clientId     String   @unique
+  clientSecret String
+  redirectUri  String
+  name         String
+  createdAt    DateTime @default(now())
+
+  @@map("oauth_clients")
 }
 
 model AuthCode {
-    id String @id @default(cuid())
-	code String @unique
-	clientId String
-	userId String
-	expiresAt DateTime
-	used Boolean @default(false)
-	createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  code      String   @unique
+  clientId  String
+  userId    String
+  email     String
+  state     String?
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
 
-	@@map("auth_codes")
+  @@map("auth_codes")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("refresh_tokens")
 }
