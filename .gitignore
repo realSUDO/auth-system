@@ -6,3 +6,7 @@ dist/
 *.key
 backend/src/utils/keys/private.key
 backend/src/utils/keys/public.key
+
+# docs
+*.md
+!README.md
