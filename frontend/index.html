@@ -93,7 +93,7 @@
     <nav class="topbar">
       <span class="brand-name">SudoAuth</span>
       <div class="topbar-right">
-        <span class="topbar-email" id="topbarEmail"></span>
+        <a class="topbar-link" href="/docs">Docs</a>
         <button class="btn-ghost" id="logoutBtn">Logout</button>
       </div>
     </nav>
@@ -106,10 +106,12 @@
             <p class="dash-email" id="dashEmail"></p>
           </div>
         </div>
-        <div class="token-section">
-          <p class="token-label">Access token</p>
-          <pre class="token-pre" id="dashToken"></pre>
-        </div>
+      </div>
+      <div class="dash-card">
+        <p class="card-title">Account details</p>
+        <div class="info-row"><span class="info-label">User ID</span><code class="info-val" id="dashSub"></code></div>
+        <div class="info-row"><span class="info-label">Email</span><span class="info-val" id="dashEmail2"></span></div>
+        <div class="info-row"><span class="info-label">Name</span><span class="info-val" id="dashName2"></span></div>
       </div>
     </div>
   </div>

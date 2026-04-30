@@ -37,11 +37,12 @@ function showAdmin() {
 
 // ---- Dashboard ----
 function renderDashboard(user, token) {
-  document.getElementById('topbarEmail').textContent = user.email;
   document.getElementById('avatarLetter').textContent = (user.name || user.email)[0].toUpperCase();
-  document.getElementById('dashName').textContent = user.name || '—';
+  document.getElementById('dashName').textContent = user.name || user.email;
   document.getElementById('dashEmail').textContent = user.email;
-  document.getElementById('dashToken').textContent = token;
+  document.getElementById('dashSub').textContent = user.id;
+  document.getElementById('dashEmail2').textContent = user.email;
+  document.getElementById('dashName2').textContent = user.name || '—';
   showPage('pageDashboard');
 }
 

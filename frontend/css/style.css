@@ -652,3 +652,17 @@ label {
 }
 .copy-btn:hover { background: rgba(255,255,255,0.1); color: var(--light); }
 .copy-btn.copied { color: #6dcc8a; border-color: rgba(80,200,120,0.3); }
+
+/* ---- Info rows ---- */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+.info-row:last-child { border-bottom: none; }
+.info-label { color: var(--muted); }
+.info-val { color: var(--light); font-family: var(--font-ui); }
+.info-val code { font-family: monospace; font-size: 0.82rem; color: var(--muted); }
