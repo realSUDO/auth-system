@@ -52,9 +52,11 @@ function logout() { clearAuth(); showPage('pageAuth'); }
 document.getElementById('tabLogin').addEventListener('click', () => switchTab('login'));
 document.getElementById('tabSignup').addEventListener('click', () => switchTab('signup'));
 document.getElementById('adminLink').addEventListener('click', (e) => { e.preventDefault(); showAdmin(); });
+document.getElementById('adminLinkMobile')?.addEventListener('click', (e) => { e.preventDefault(); showAdmin(); });
 document.getElementById('adminBackBtn').addEventListener('click', () => showPage('pageAuth'));
 document.getElementById('logoutBtn').addEventListener('click', logout);
 document.getElementById('requestLink').addEventListener('click', (e) => { e.preventDefault(); showPage('pageRequest'); });
+document.getElementById('requestLinkMobile')?.addEventListener('click', (e) => { e.preventDefault(); showPage('pageRequest'); });
 document.getElementById('requestBackBtn').addEventListener('click', () => showPage('pageAuth'));
 
 // ---- Login ----
