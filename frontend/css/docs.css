@@ -79,6 +79,7 @@ body {
 .docs-layout {
   display: grid;
   grid-template-columns: 260px 1fr;
+  overflow-x: hidden;
   min-height: calc(100vh - 57px);
 }
 
@@ -122,12 +123,13 @@ body {
 .docs-content {
   padding: 4rem 5rem;
   max-width: 860px;
+  min-width: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.code-wrap { position: relative; max-width: 100%; overflow: hidden; }
+.code-wrap { position: relative; min-width: 0; }
 
 .doc-section {
   padding-bottom: 4rem;
@@ -224,7 +226,7 @@ body {
 }
 
 /* ---- Code block ---- */
-.code-wrap { position: relative; }
+.code-wrap { position: relative; min-width: 0; }
 
 .copy-btn {
   position: absolute;
