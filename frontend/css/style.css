@@ -717,6 +717,17 @@ label {
 }
 .mobile-footer a:hover { color: var(--light); }
 
+/* ---- Mobile brand (hidden on desktop) ---- */
+.mobile-brand {
+  display: none;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 2rem;
+}
+.mobile-brand .brand-name { font-size: 2rem; }
+.mobile-brand .brand-tagline { font-size: 0.9rem; max-width: 100%; }
+
 @media (max-width: 640px) {
   .mobile-footer { display: flex; }
+  .mobile-brand { display: flex; }
 }

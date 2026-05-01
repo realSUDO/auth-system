@@ -302,6 +302,22 @@ body {
 @media (max-width: 900px) {
   .docs-layout { grid-template-columns: 1fr; }
   .docs-sidebar { display: none; }
-  .docs-content { padding: 2.5rem 1.5rem; }
+  .docs-content { padding: 2rem 1.5rem; }
   .doc-h1 { font-size: 1.7rem; }
+}
+
+@media (max-width: 640px) {
+  .topbar { padding: 0.85rem 1.25rem; }
+  .brand-name { font-size: 1.3rem; }
+  .btn-ghost { font-size: 0.8rem; padding: 0.35rem 0.7rem; }
+  .topbar-link { font-size: 0.8rem; }
+  .docs-content { padding: 1.5rem 1rem; }
+  .doc-h1 { font-size: 1.4rem; }
+  .doc-h2 { font-size: 1rem; }
+  .code-block { font-size: 0.78rem; padding: 1rem; }
+  .ep-row { grid-template-columns: 50px 1fr; font-size: 0.78rem; }
+  .ep-row span:last-child { display: none; }
+  .ep-row.header span:last-child { display: none; }
+  .callout { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+  .step-header { gap: 0.6rem; }
 }
